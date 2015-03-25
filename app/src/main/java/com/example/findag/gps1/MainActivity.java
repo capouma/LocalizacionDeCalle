@@ -30,6 +30,7 @@ import android.os.Looper;
 import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -48,9 +49,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import android.telephony.SmsManager;
 
 public class MainActivity extends ActionBarActivity
 {
+    private Button btnEnviarSMS;
     private Button btnActualizar;
     private Button btnDesactivar;
     private TextView lblLatitud;
@@ -95,8 +98,22 @@ public class MainActivity extends ActionBarActivity
                 locManager.removeUpdates(mLocListener);
             }
         });
+
+        btnEnviarSMS = (Button) findViewById(R.id.btnEnviarSMS);
+        btnEnviarSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                enviarSMS("670907368");
+            }
+        });
     }
 
+    private void enviarSMS(String numtelf)
+    {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(numtelf,null,lblCalle.getText().toString(),null,null);
+    }
     public class MyLocationListener extends Context implements LocationListener
     {
         MainActivity mainActivity;
@@ -135,6 +152,8 @@ public class MainActivity extends ActionBarActivity
         public void getMyLocationAddress(Location loc)
         {
             Geocoder geocoder = new Geocoder(this, Locale.ENGLISH);
+
+
 
             try {
                 List<Address> addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(),1);
