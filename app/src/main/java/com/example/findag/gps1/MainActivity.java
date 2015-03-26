@@ -49,10 +49,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
-import android.telephony.SmsManager;
-
 public class MainActivity extends ActionBarActivity
 {
+
+    // Definimos los nombres de los botones y los textview y los ponemos como privados
     private Button btnEnviarSMS;
     private Button btnActualizar;
     private Button btnDesactivar;
@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity
     private TextView lblCalle;
 
 
+    // Definimos el nombre que vamos a usar tanto para el LocationManager y el MyLocationListener
     private LocationManager locManager;
     private MyLocationListener mLocListener;
 
@@ -75,10 +76,13 @@ public class MainActivity extends ActionBarActivity
         //Obtenemos una referencia al LocationManager
         locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
+        // Creamos un objeto de tipo MyLocationListener
         mLocListener = new MyLocationListener();
         mLocListener.setMainActivity(this);
+        // Pasamos un valor de 300000 que es el tiempo de cada actualizacion
         locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,30000,0,mLocListener);
 
+        // Referenciamos los nombres definidos antes con sus homologos en el layout
         btnActualizar = (Button)findViewById(R.id.BtnActualizar);
         btnDesactivar = (Button)findViewById(R.id.BtnDesactivar);
         lblLatitud = (TextView)findViewById(R.id.LblPosLatitud);
@@ -87,28 +91,37 @@ public class MainActivity extends ActionBarActivity
         lblEstado = (TextView)findViewById(R.id.LblEstado);
         lblCalle = (TextView) findViewById(R.id.LblCalle);
 
+        // Definimos el onclick de nuestro boton actualizar, que sera el encargado de poner en funcionamiento la localizacion
         btnActualizar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 MyLocationListener myLocationListener = new MyLocationListener();
                 myLocationListener.getClass();
             }
         });
+        // Definimos el onclick de nuestro boton desactivar que es el encargado de parar la busqueda.
+
         btnDesactivar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 locManager.removeUpdates(mLocListener);
             }
         });
 
+        // Referenciamos el boton con su homologo en el layout
         btnEnviarSMS = (Button) findViewById(R.id.btnEnviarSMS);
+
+        // Definimos el boton enviarSMS que sera el encargado de enviar nuestro SMS de ayuda
         btnEnviarSMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
+                // Llamamos al metodo enviarSMS y ahi le pasamos el numero de contacto al cual queremos avisar.
                 enviarSMS("670907368");
             }
         });
     }
 
+    // Este metodo recibe un numero de telefono y con el por medio del SmsManager envia el mensaje. El mensaje que enviamos en este caso
+    // es a calle donde estamos situados, asi que lo que le estamos mandando es el propio textView.
     private void enviarSMS(String numtelf)
     {
         SmsManager sms = SmsManager.getDefault();
@@ -129,6 +142,8 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onLocationChanged(Location loc)
         {
+
+            // Si nuestro objeto loc devuelve algo distinto de null lo recogemos en nuestros textview
             if(loc != null)
             {
                 lblLatitud.setText("Latitud: " + String.valueOf(loc.getLatitude()));
@@ -140,15 +155,17 @@ public class MainActivity extends ActionBarActivity
 
                 Log.i("LocAndroid ", String.valueOf(loc.getLatitude() + " - " + String.valueOf(loc.getLongitude())));
             }
+
+            // En caso de que sea un null le pasamos el mensaje de sin datos
             else
             {
                 lblLatitud.setText("Latitud: (sin_datos)");
                 lblLongitud.setText("Longitud: (sin_datos)");
                 lblPrecision.setText("Precision: (sin_datos)");
             }
-            //this.mainActivity.setLocation(loc);
         }
 
+        // Este es el metodo que recoge las coordenadas y las traduce a una direccion.
         public void getMyLocationAddress(Location loc)
         {
             Geocoder geocoder = new Geocoder(this, Locale.ENGLISH);
@@ -156,6 +173,8 @@ public class MainActivity extends ActionBarActivity
 
 
             try {
+                // Lo que hacemos es crear un List de tipo Address y como solo nos interesa la ultima posicion le damos un tamanho de 1,
+                // de esta manera solo tendremos la posicion deseada q es la ultima.
                 List<Address> addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(),1);
 
                 if (addresses != null)
@@ -167,7 +186,7 @@ public class MainActivity extends ActionBarActivity
                     {
                         strAddress.append(fetchedAddress.getAddressLine(i)).append("\n");
                     }
-                    lblCalle.setText("I am at: " + strAddress.toString());
+                    lblCalle.setText("Necesito ayuda en : " + strAddress.toString());
                 }
                 else
                     lblCalle.setText("No location found.....!");
@@ -177,6 +196,8 @@ public class MainActivity extends ActionBarActivity
             }
         }
 
+
+        // La clase MyLocationListener nos obliga a importar todos estos metodos, aunque su valor sea null
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
