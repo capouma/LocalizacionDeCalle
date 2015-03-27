@@ -52,6 +52,10 @@ import java.util.Locale;
 public class MainActivity extends ActionBarActivity
 {
 
+    public MainActivity()
+    {
+
+    }
     // Definimos los nombres de los botones y los textview y los ponemos como privados
     private Button btnEnviarSMS;
     private Button btnActualizar;
@@ -115,7 +119,9 @@ public class MainActivity extends ActionBarActivity
             public void onClick(View v)
             {
                 // Llamamos al metodo enviarSMS y ahi le pasamos el numero de contacto al cual queremos avisar.
-                enviarSMS("670907368");
+                enviarSMS("670462461");
+
+
             }
         });
     }
@@ -126,6 +132,10 @@ public class MainActivity extends ActionBarActivity
     {
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(numtelf,null,lblCalle.getText().toString(),null,null);
+
+        //LLamamos a nuestra otra activity, que lo que hara sera cargar un fragment.
+        Intent intento = new Intent(MainActivity.this, SecondActivity.class);
+        startActivity(intento);
     }
     public class MyLocationListener extends Context implements LocationListener
     {
